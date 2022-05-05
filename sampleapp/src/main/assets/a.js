@@ -1,0 +1,3 @@
+function funcA() {
+  return "a";
+}
