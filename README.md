@@ -43,3 +43,55 @@ dependencies {
    implementation 'com.github.otsuka-kohei:rhinoroidd:<version>'
 }
 ```
+
+### Add AAPT option
+To avoid error due to compressing .js file, add this option to your module `build.gradle`.
+```gradle
+android {
+    aaptOptions {
+        noCompress "js"
+    }
+}
+```
+
+### Put .js files into asset folder.
+```
+...
+└── assets
+    ├── a.js
+    ├── b.js
+    └── c
+        └── c.js
+```
+a.js
+```javascript
+function funcA() {
+  return "a";
+}
+```
+b.js
+```javascript
+function funcB() {
+  return "b";
+}
+```
+c.js
+```javascript
+function funcC() {
+  return "c";
+}
+```
+
+### Use Rhinoroid
+```kotlin
+val rhinoroid = Rhinoroid(this)
+rhinoroid.import("a.js")
+rhinoroid.import("b.js")
+rhinoroid.import("c/c.js")
+val result = rhinoroid.evaluate("funcA() + funcB() + funcC();") as String // abc
+```
+
+
+## Dependencies
+- [Mozilla Rhino](https://github.com/mozilla/rhino)
+  - For JavaScript evaluation.
