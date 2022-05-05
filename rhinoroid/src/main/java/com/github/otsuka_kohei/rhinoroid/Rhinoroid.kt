@@ -1,12 +1,8 @@
 package com.github.otsuka_kohei.rhinoroid
 
 import android.content.Context
+import android.util.Log
 import org.mozilla.javascript.Scriptable
-import java.io.ByteArrayInputStream
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.io.SequenceInputStream
-import java.util.*
 
 
 /**
@@ -21,8 +17,7 @@ class Rhinoroid(private val context: Context) {
     private val rhinoContext: org.mozilla.javascript.Context =
         org.mozilla.javascript.Context.enter()
     private val scriptable: Scriptable = rhinoContext.initStandardObjects()
-
-    private val jsInputStreamList = ArrayList<InputStream>()
+    private val jsList = ArrayList<String>()
 
     init {
         rhinoContext.optimizationLevel = -1
@@ -37,8 +32,14 @@ class Rhinoroid(private val context: Context) {
      * @param jsFilePathInAssetFolder Path of JavaScript (.js) file in asset folder.
      */
     fun import(jsFilePathInAssetFolder: String) {
-        val inputStream: InputStream = context.assets.open(jsFilePathInAssetFolder)
-        jsInputStreamList.add(inputStream)
+        val stringBuilder = StringBuilder()
+        context.assets.open(jsFilePathInAssetFolder).bufferedReader().useLines { stringSequence ->
+            stringSequence.forEach {
+                stringBuilder.append(it)
+                stringBuilder.append("\n")
+            }
+        }
+        jsList.add(stringBuilder.toString())
     }
 
 
@@ -50,11 +51,13 @@ class Rhinoroid(private val context: Context) {
      * @return Result of evaluation.
      */
     fun evaluate(js: String): Any {
-        val jsInputStream = ByteArrayInputStream(js.toByteArray())
-        jsInputStreamList.add(jsInputStream)
-        val concatenatedImportedJsInputStream =
-            SequenceInputStream(Collections.enumeration(jsInputStreamList))
-        val inputStreamReader = InputStreamReader(concatenatedImportedJsInputStream)
-        return rhinoContext.evaluateReader(scriptable, inputStreamReader, "js", 0, null)
+        jsList.add(js)
+        val stringBuilder = StringBuilder()
+        jsList.forEach {
+            stringBuilder.append(it)
+            stringBuilder.append("\n")
+        }
+        val concatenatedJs = stringBuilder.toString()
+        return rhinoContext.evaluateString(scriptable, concatenatedJs, "js", 0, null)
     }
 }
