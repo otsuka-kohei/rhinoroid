@@ -1,6 +1,20 @@
+/*
+Commands:
+Build AAR for release: gradlew assembleRelease
+Push to GitHub Packages: gradlew assembleRelease publish
+ */
+
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+
+    id 'maven-publish'
+
+    id 'org.jetbrains.dokka'
+}
+
+ext {
+    versionName = "0.1"
 }
 
 android {
@@ -20,12 +34,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
+
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 }
 
@@ -39,4 +61,43 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation 'org.mozilla:rhino:1.7.14'
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = 'https://maven.pkg.github.com/otsuka-kohei/rhinoroid'
+
+            credentials {
+                def localProperties = new Properties()
+                localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+                username = localProperties.containsKey("com.github.user") ? localProperties.getProperty('com.github.user') : ''
+                password = localProperties.containsKey("com.github.token") ? localProperties.getProperty('com.github.token') : ''
+            }
+        }
+    }
+
+    publications {
+        GitHubPackages(MavenPublication) {
+            groupId "com.github.otsuka_kohei"
+            artifactId "rhinoroid"
+            version versionName
+
+            afterEvaluate {
+                from components.release
+            }
+
+            pom {
+                url = 'https://github.com/otsuka-kohei/rhinoroid'
+
+                licenses {
+                    license {
+                        name = 'Apache License Version 2.0'
+                    }
+                }
+            }
+        }
+    }
 }
