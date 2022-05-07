@@ -96,6 +96,53 @@ val result = Rhinoroid.open(this).use {
 // abc
 ```
 
+## Trouble Shooting for Rhino issue
+Some JavaScript feature (e.g. Block-scoped constants which is defined by  `const` keyword) is not supported by Rhino.  
+Thus, Rhinoroid which uses Rhino can throw exceptions when import or evaluate such javaScript code doe to this reason.  
+To avoid this issue, you can use Babel to convert JavaAcript code to Rhino supported code.  
+One of example of method is as follows.  
+  
+(1) Install Node.js
+```bash
+sudo apt install nodejs
+```
+
+(2) Create working directoy
+```bash
+mkdir babel_for_rhino
+```
+
+(3) Create a config file  
+Create `babel.config.json` as follows.  
+Please replace `1.7.14` to Rhino version which you use.
+```json
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "rhino": "1.7.14"
+                }
+            }
+        ]
+    ]
+}
+```
+
+(4) Setup babel  
+```bash
+npm init -y
+npm install --save-dev @babel/core @babel/cli @babel/preset-env
+```
+
+(5) Execute Babel
+```bash
+./node_modules/.bin/babel not_rhino_supported.js -o rhino_supported.js
+```
+
+(6) Load Converted JavaScript code to Rhinoroid
+
 
 ## Dependencies
 - [Mozilla Rhino](https://github.com/mozilla/rhino)
