@@ -41,7 +41,7 @@ allprojects {
 Add this dependency to your module `build.gradle`.
 ```gradle
 dependencies {
-   implementation 'com.github.otsuka-kohei:rhinoroid:<version>'
+   implementation 'com.github.otsuka_kohei:rhinoroid:<version>'
 }
 ```
 
