@@ -107,9 +107,12 @@ One of example of method is as follows.
 sudo apt install nodejs
 ```
 
-(2) Create working directoy
+(2) Setup babel 
 ```bash
 mkdir babel_for_rhino
+cd babel_for_rhino
+npm init -y
+npm install --save-dev @babel/core @babel/cli @babel/preset-env
 ```
 
 (3) Create a config file  
@@ -130,18 +133,12 @@ Please replace `1.7.14` to Rhino version which you use.
 }
 ```
 
-(4) Setup babel  
-```bash
-npm init -y
-npm install --save-dev @babel/core @babel/cli @babel/preset-env
-```
-
-(5) Execute Babel
+(4) Execute Babel
 ```bash
 ./node_modules/.bin/babel not_rhino_supported.js -o rhino_supported.js
 ```
 
-(6) Load Converted JavaScript code to Rhinoroid
+(5) Load converted JavaScript code to Rhinoroid
 
 
 ## Dependencies
