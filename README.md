@@ -100,6 +100,7 @@ val result = Rhinoroid.open(this).use {
 Some JavaScript feature (e.g. Block-scoped constants which is defined by  `const` keyword) is not supported by Rhino.  
 Thus, Rhinoroid which uses Rhino can throw exceptions when import or evaluate such javaScript code doe to this reason.  
 To avoid this issue, you can use Babel to convert JavaAcript code to Rhino supported code.  
+This issue will be fixed in the future.  
 One of example of method is as follows.  
   
 (1) Install Node.js
