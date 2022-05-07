@@ -1,7 +1,8 @@
 # Rhinoroid
 [![](https://jitpack.io/v/otsuka-kohei/rhinoroid.svg)](https://jitpack.io/#otsuka-kohei/rhinoroid)
   
-JavaScript evaluator for Android
+Rhinoroid is a simple wrapper of Mozilla Rhino for Android.  
+Rhinoroid can evaluate JavaScript on Android.
 
 ## How to use
 ### Add dependency
