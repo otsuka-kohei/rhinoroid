@@ -2,6 +2,7 @@ package com.github.otsuka_kohei.rhinoroid
 
 import android.content.Context
 import org.mozilla.javascript.Scriptable
+import java.io.Closeable
 
 
 /**
@@ -11,10 +12,17 @@ import org.mozilla.javascript.Scriptable
  *
  * @property context
  */
-class Rhinoroid(
-    private val context: Context,
-    javaScriptVersion: Int = org.mozilla.javascript.Context.VERSION_ES6
-) {
+class Rhinoroid private constructor(private val context: Context, javaScriptVersion: Int) :
+    Closeable {
+
+    companion object {
+        fun open(
+            context: Context,
+            javaScriptVersion: Int = org.mozilla.javascript.Context.VERSION_ES6
+        ): Rhinoroid {
+            return Rhinoroid(context, javaScriptVersion)
+        }
+    }
 
     private val rhinoContext: org.mozilla.javascript.Context =
         org.mozilla.javascript.Context.enter()
@@ -63,5 +71,9 @@ class Rhinoroid(
             0,
             null
         )
+    }
+
+    override fun close() {
+        rhinoContext.close()
     }
 }

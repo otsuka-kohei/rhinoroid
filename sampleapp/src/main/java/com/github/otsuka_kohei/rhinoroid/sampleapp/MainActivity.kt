@@ -10,11 +10,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val rhinoroid = Rhinoroid(this)
-        rhinoroid.import("a.js")
-        rhinoroid.import("b.js")
-        rhinoroid.import("c/c.js")
-        val result = rhinoroid.evaluate("funcA() + funcB() + funcC();") as String
+        val result = Rhinoroid.open(this).use {
+            it.import("a.js")
+            it.import("b.js")
+            it.import("c/c.js")
+            it.evaluate("funcA() + funcB() + funcC();") as String
+        }
 
         val textView = findViewById<TextView>(R.id.textView)
         textView.text = result
