@@ -1,7 +1,6 @@
 package com.github.otsuka_kohei.rhinoroid
 
 import android.content.Context
-import android.util.Log
 import org.mozilla.javascript.Scriptable
 
 
@@ -12,15 +11,19 @@ import org.mozilla.javascript.Scriptable
  *
  * @property context
  */
-class Rhinoroid(private val context: Context) {
+class Rhinoroid(
+    private val context: Context,
+    javaScriptVersion: Int = org.mozilla.javascript.Context.VERSION_ES6
+) {
 
     private val rhinoContext: org.mozilla.javascript.Context =
         org.mozilla.javascript.Context.enter()
     private val scriptable: Scriptable = rhinoContext.initStandardObjects()
-    private val jsList = ArrayList<String>()
+    private var importCounter = 0
 
     init {
         rhinoContext.optimizationLevel = -1
+        rhinoContext.languageVersion = javaScriptVersion
     }
 
 
@@ -32,14 +35,16 @@ class Rhinoroid(private val context: Context) {
      * @param jsFilePathInAssetFolder Path of JavaScript (.js) file in asset folder.
      */
     fun import(jsFilePathInAssetFolder: String) {
-        val stringBuilder = StringBuilder()
-        context.assets.open(jsFilePathInAssetFolder).bufferedReader().useLines { stringSequence ->
-            stringSequence.forEach {
-                stringBuilder.append(it)
-                stringBuilder.append("\n")
-            }
+        context.assets.open(jsFilePathInAssetFolder).bufferedReader().use {
+            rhinoContext.evaluateReader(
+                scriptable,
+                it,
+                "Import${importCounter}($jsFilePathInAssetFolder)",
+                0,
+                null
+            )
         }
-        jsList.add(stringBuilder.toString())
+        importCounter++
     }
 
 
@@ -51,13 +56,12 @@ class Rhinoroid(private val context: Context) {
      * @return Result of evaluation.
      */
     fun evaluate(js: String): Any {
-        jsList.add(js)
-        val stringBuilder = StringBuilder()
-        jsList.forEach {
-            stringBuilder.append(it)
-            stringBuilder.append("\n")
-        }
-        val concatenatedJs = stringBuilder.toString()
-        return rhinoContext.evaluateString(scriptable, concatenatedJs, "js", 0, null)
+        return rhinoContext.evaluateString(
+            scriptable,
+            js,
+            "Evaluated JavaScript Code",
+            0,
+            null
+        )
     }
 }
