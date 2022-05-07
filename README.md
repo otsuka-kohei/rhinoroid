@@ -85,11 +85,15 @@ function funcC() {
 
 ### Use Rhinoroid
 ```kotlin
-val rhinoroid = Rhinoroid(this)
-rhinoroid.import("a.js")
-rhinoroid.import("b.js")
-rhinoroid.import("c/c.js")
-val result = rhinoroid.evaluate("funcA() + funcB() + funcC();") as String // abc
+// On Android Activity
+
+val result = Rhinoroid.open(this).use {
+  it.import("a.js")
+  it.import("b.js")
+  it.import("c/c.js")
+  it.evaluate("funcA() + funcB() + funcC();") as String
+}
+// abc
 ```
 
 
